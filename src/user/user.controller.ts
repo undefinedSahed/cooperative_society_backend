@@ -1,13 +1,12 @@
-import { Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-
     constructor(private readonly userService: UserService) { }
 
     @Post('register')
     async create() {
-        return "Bla!"
+        return 'Bla!';
     }
 }

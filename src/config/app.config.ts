@@ -1,3 +1,3 @@
 export default () => ({
-    port: Number(process.env.PORT) || 5000
-})
+  port: Number(process.env.PORT) || 5000,
+});
