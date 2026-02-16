@@ -8,12 +8,12 @@ import { UserRole } from './user.schema';
 
 @Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async create(@Body() createUserDto: CreateUserDto) {
-        return this.userService.create(createUserDto);
-    }
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
 }
