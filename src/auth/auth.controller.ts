@@ -31,7 +31,7 @@ export class AuthController {
       );
     }
 
-    const data = await this.authService.login(user);
+    const data = this.authService.login(user);
     return sendResponse(data, 'Login successful');
   }
 }

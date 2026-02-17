@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -10,19 +10,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(phoneNumber: string, pass: string): Promise<any> {
+  async validateUser(
+    phoneNumber: string,
+    pass: string,
+  ): Promise<{ _id: any; phoneNumber: string; role: string } | null> {
     const user = await this.userService.findByPhoneNumber(phoneNumber);
     if (user && (await bcrypt.compare(pass, user.password))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-unsafe-assignment
       const { password, ...result } = user.toObject();
-      return result;
+      return result as { _id: any; phoneNumber: string; role: string };
     }
     return null;
   }
 
-  async login(user: any) {
+  login(user: { _id: any; phoneNumber: string; role: string }) {
     const payload = {
       phoneNumber: user.phoneNumber,
-      sub: user._id,
+      sub: String(user._id),
       role: user.role,
     };
     return {
