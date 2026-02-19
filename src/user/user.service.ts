@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -32,6 +37,14 @@ export class UserService {
   }
 
   async findByPhoneNumber(phoneNumber: string): Promise<UserDocument | null> {
+    const user = await this.userModel.findOne({ phoneNumber }).exec();
+
+    if (!user) {
+      throw new NotFoundException(
+        errorResponse('User not found', HttpStatus.NOT_FOUND),
+      );
+    }
+
     return this.userModel.findOne({ phoneNumber }).exec();
   }
 
