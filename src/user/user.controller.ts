@@ -9,7 +9,7 @@ import { sendResponse } from 'src/common/utils/response.util';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

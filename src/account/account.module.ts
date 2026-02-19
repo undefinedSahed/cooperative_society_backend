@@ -14,4 +14,4 @@ import { User, UserSchema } from 'src/user/user.schema';
   controllers: [AccountController],
   exports: [AccountService],
 })
-export class AccountModule { }
+export class AccountModule {}

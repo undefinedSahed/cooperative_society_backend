@@ -20,7 +20,7 @@ import { sendResponse } from 'src/common/utils/response.util';
 
 @Controller('account')
 export class AccountController {
-  constructor(private readonly accountService: AccountService) { }
+  constructor(private readonly accountService: AccountService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -28,7 +28,11 @@ export class AccountController {
   async create(@Body() createAccountDto: CreateAccountDto) {
     const createdAccount = await this.accountService.create(createAccountDto);
 
-    return sendResponse(createdAccount, 'Account created successfully', HttpStatus.CREATED);
+    return sendResponse(
+      createdAccount,
+      'Account created successfully',
+      HttpStatus.CREATED,
+    );
   }
 
   @Get()

@@ -10,14 +10,13 @@ import { User, UserDocument } from 'src/user/user.schema';
 
 @Injectable()
 export class AccountService {
-
   constructor(
     @InjectModel(Account.name)
     private accountModel: Model<AccountDocument>,
 
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async create(createAccountDto: CreateAccountDto) {
     const { phoneNumber, joinDate, ...rest } = createAccountDto;
