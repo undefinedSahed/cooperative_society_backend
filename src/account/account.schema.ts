@@ -15,9 +15,6 @@ export class Account {
   accountNumber: string;
 
   @Prop({ required: true })
-  accountType: string;
-
-  @Prop({ required: true })
   relation: string;
 
   @Prop({ required: true })
