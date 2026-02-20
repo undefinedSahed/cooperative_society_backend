@@ -51,4 +51,13 @@ export class UserController {
     const data = await this.userService.changeUserRole(phoneNumber, assignRoleDto.role);
     return sendResponse(data, 'User role updated successfully', HttpStatus.OK);
   }
+
+  // Get all users (Admin only)
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findAll() {
+    const data = await this.userService.findAllUsers();
+    return sendResponse(data, 'Users retrieved successfully', HttpStatus.OK);
+  }
 }

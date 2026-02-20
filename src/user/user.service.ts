@@ -61,4 +61,9 @@ export class UserService {
     user.role = newRole;
     return user.save();
   }
+
+  // Get all users (Admin only)
+  async findAllUsers(): Promise<User[]> {
+    return this.userModel.find().sort({ joinDate: -1 }).exec();
+  }
 }
