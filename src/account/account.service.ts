@@ -106,7 +106,20 @@ export class AccountService {
     return account.save();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+  // Delete an account (Admin only)
+  async remove(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+
+    const account = await this.accountModel.findById(id);
+    if (!account) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+    return this.accountModel.findByIdAndDelete(id);
   }
 }

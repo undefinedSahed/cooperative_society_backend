@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
@@ -61,8 +62,13 @@ export class AccountController {
     return sendResponse(updatedAccount, 'Account status updated successfully', HttpStatus.OK);
   }
 
+  // Delete an account (Admin only)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.accountService.remove(+id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async remove(@Param('id') id: string) {
+    const deletedAccount = await this.accountService.remove(id);
+    return sendResponse(null, 'Account deleted successfully', HttpStatus.NO_CONTENT);
   }
 }
