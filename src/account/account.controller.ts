@@ -11,16 +11,16 @@ import {
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/user/user.schema';
 import { sendResponse } from 'src/common/utils/response.util';
+import { UserOrAdminGuard } from 'src/common/guards/user-or-admin.guard';
 
 @Controller('account')
 export class AccountController {
-  constructor(private readonly accountService: AccountService) {}
+  constructor(private readonly accountService: AccountService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,19 +35,30 @@ export class AccountController {
     );
   }
 
+  // Get all accounts with user details (Admin only)
   @Get()
-  findAll() {
-    return this.accountService.findAll();
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async findAll() {
+    const data = await this.accountService.findAll();
+    return sendResponse(data, 'Accounts retrieved successfully', HttpStatus.OK);
   }
 
+  // Get a single account by ID (Admin and User can access their own account)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.accountService.findOne(+id);
+  @UseGuards(JwtAuthGuard, UserOrAdminGuard)
+  async findOne(@Param('id') id: string) {
+    const data = await this.accountService.findOne(id);
+    return sendResponse(data, 'Account retrieved successfully', HttpStatus.OK);
   }
 
+  // Change account status (active/inactive) (Admin only)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountService.update(+id, updateAccountDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async update(@Param('id') id: string) {
+    const updatedAccount = await this.accountService.update(id);
+    return sendResponse(updatedAccount, 'Account status updated successfully', HttpStatus.OK);
   }
 
   @Delete(':id')

@@ -1,9 +1,8 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
 import { Account } from './account.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AccountDocument } from './account.schema';
 import { errorResponse } from 'src/common/utils/response.util';
 import { User, UserDocument } from 'src/user/user.schema';
@@ -16,7 +15,7 @@ export class AccountService {
 
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
   async create(createAccountDto: CreateAccountDto) {
     const { phoneNumber, joinDate, ...rest } = createAccountDto;
@@ -62,16 +61,49 @@ export class AccountService {
     return createdAccount.save();
   }
 
-  findAll() {
-    return `This action returns all account`;
+  // Get all accounts with user details (Admin only)
+  async findAll(): Promise<Account[]> {
+    const accounts = await this.accountModel.find().populate('userId', 'phoneNumber fullName role status').exec();
+    return accounts;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
+  // Get a single account by ID (Admin and User can access their own account)
+  async findOne(id: string): Promise<Account | null> {
+
+    if (!Types.ObjectId.isValid(id)) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+
+    const account = await this.accountModel.findById(id).populate('userId', 'phoneNumber fullName role status').exec();
+
+    if (!account) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+
+    return account;
   }
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
+  // Change account status (Admin only)
+  async update(id: string) {
+
+    if (!Types.ObjectId.isValid(id)) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+
+    const account = await this.accountModel.findById(id);
+    if (!account) {
+      throw new NotFoundException(
+        errorResponse(`Account with ID ${id} not found`, HttpStatus.NOT_FOUND),
+      );
+    }
+    account.status = account.status === 'active' ? 'inactive' : 'active';
+    return account.save();
   }
 
   remove(id: number) {
