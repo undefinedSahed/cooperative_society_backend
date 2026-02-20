@@ -23,7 +23,7 @@ export class User {
   @Prop({ required: true, unique: true, index: true })
   phoneNumber: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, select: false })
   password: string;
 
   @Prop({ required: true, enum: UserRole, default: UserRole.MEMBER })

@@ -47,8 +47,4 @@ export class UserService {
 
     return this.userModel.findOne({ phoneNumber }).exec();
   }
-
-  async findById(id: string): Promise<User | null> {
-    return this.userModel.findById(id).exec();
-  }
 }
