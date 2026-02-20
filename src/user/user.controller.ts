@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Get,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from './user.schema';
 import { sendResponse } from 'src/common/utils/response.util';
 import { UserOrAdminGuard } from 'src/common/guards/user-or-admin.guard';
+import { AssignRoleDto } from './dto/assign-role.dto';
 
 @Controller('users')
 export class UserController {
@@ -36,5 +38,17 @@ export class UserController {
   async findOne(@Param('phoneNumber') phoneNumber: string) {
     const data = await this.userService.findByPhoneNumber(phoneNumber);
     return sendResponse(data, 'User retrieved successfully', HttpStatus.OK);
+  }
+
+  // Assign user role (Admin only)
+  @Patch('assign-role/:phoneNumber')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async assignRole(
+    @Param('phoneNumber') phoneNumber: string,
+    @Body() assignRoleDto: AssignRoleDto,
+  ) {
+    const data = await this.userService.changeUserRole(phoneNumber, assignRoleDto.role);
+    return sendResponse(data, 'User role updated successfully', HttpStatus.OK);
   }
 }

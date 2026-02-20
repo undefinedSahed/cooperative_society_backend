@@ -8,12 +8,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User, UserDocument } from './user.schema';
+import { User, UserDocument, UserRole } from './user.schema';
 import { errorResponse } from '../common/utils/response.util';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { password, ...rest } = createUserDto;
@@ -46,5 +46,19 @@ export class UserService {
     }
 
     return this.userModel.findOne({ phoneNumber }).exec();
+  }
+
+  // Change user role (Admin only)
+  async changeUserRole(phoneNumber: string, newRole: UserRole): Promise<User> {
+    const user = await this.userModel.findOne({ phoneNumber }).exec();
+
+    if (!user) {
+      throw new NotFoundException(
+        errorResponse('User not found', HttpStatus.NOT_FOUND),
+      );
+    }
+
+    user.role = newRole;
+    return user.save();
   }
 }
