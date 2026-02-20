@@ -18,7 +18,7 @@ import { UserOrAdminGuard } from 'src/common/guards/user-or-admin.guard';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   // Create a new user (Admin only)
   @Post()
@@ -26,6 +26,7 @@ export class UserController {
   @Roles(UserRole.ADMIN)
   async create(@Body() createUserDto: CreateUserDto) {
     const data = await this.userService.create(createUserDto);
+    data.password = "********";
     return sendResponse(data, 'User created successfully', HttpStatus.CREATED);
   }
 
