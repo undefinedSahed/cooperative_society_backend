@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './account/account.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { PaymentModule } from './payment/payment.module';
+import { InvoiceModule } from './invoice/invoice.module';
 import config from './config';
 
 @Module({
@@ -25,6 +27,8 @@ import config from './config';
     AuthModule,
     AccountModule,
     DashboardModule,
+    PaymentModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
